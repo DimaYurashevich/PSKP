@@ -13,7 +13,17 @@ module.exports = (Sequelize, config) => {
     const Subject = require('../models/subject')(Sequelize, sequelize);
     const Teacher = require('../models/teacher')(Sequelize, sequelize);
 
+    Faculty.hasMany(Group);
+    Group.belongsTo(Faculty);
+
+    Group.hasMany(Student);
+    Student.belongsTo(Group);
     
+    Group.hasMany(Subject);
+    Subject.belongsTo(Group);
+
+    Teacher.hasMany(Subject);
+    Subject.belongsTo(Teacher);
     
     return {
         faculty: Faculty,
