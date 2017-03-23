@@ -1,22 +1,17 @@
 module.exports = (Sequelize, sequelize) =>{
-     return sequelize.define('student', {
+     return sequelize.define('faculty', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        surname: {
+        name: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        firstname: {
-            type: Sequelize.STRING,
-            allowNull: false
-        },
-        patronymic: {
+        fullName:{
             type: Sequelize.STRING,
             allowNull: false
         }
     });
-
 }

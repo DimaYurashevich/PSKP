@@ -1,11 +1,11 @@
 module.exports = (Sequelize, sequelize) =>{
-     return sequelize.define('student', {
+     return sequelize.define('teacher', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        surname: {
+         surname: {
             type: Sequelize.STRING,
             allowNull: false
         },
@@ -18,5 +18,4 @@ module.exports = (Sequelize, sequelize) =>{
             allowNull: false
         }
     });
-
 }

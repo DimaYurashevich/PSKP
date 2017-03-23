@@ -1,22 +1,21 @@
 module.exports = (Sequelize, sequelize) =>{
-     return sequelize.define('student', {
+     return sequelize.define('group', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        surname: {
-            type: Sequelize.STRING,
+        course: {
+            type: Sequelize.INTEGER,
             allowNull: false
         },
-        firstname: {
-            type: Sequelize.STRING,
+        group:{
+            type: Sequelize.INTEGER,
             allowNull: false
         },
-        patronymic: {
-            type: Sequelize.STRING,
+        subgroup: {
+            type: Sequelize.INTEGER,
             allowNull: false
         }
     });
-
 }
