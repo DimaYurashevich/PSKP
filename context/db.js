@@ -33,10 +33,6 @@ module.exports = (Sequelize, config) => {
 
     Teacher.hasMany(Subject);
     Subject.belongsTo(Teacher);
-
-    Role.create({role:"admin"});
-    Role.create({role:"dean"});
-    Role.create({role:"teacher"});
     
     return {
         faculty: Faculty,

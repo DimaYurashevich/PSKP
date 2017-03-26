@@ -4,8 +4,12 @@ module.exports = (authService) => {
 
     router.post('/register',(req, res) =>
     {
-        authService.login(req.body);
-        res.send("ok");
+        switch(req.body.type)
+        {
+            case "dean": rez=authService.registrationDean(req.body); break;
+            case "teacher": rez=authService.registrationTeacher(req.body); break;
+        }
+        res.send(rez);
     });
     return router;
 }
