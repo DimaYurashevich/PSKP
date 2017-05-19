@@ -1,10 +1,107 @@
-module.exports = (trainingRepository,groupRepository,userRepository, subjectRepository,validator, errors) => {
+module.exports = (trainingRepository,studentsRepository, groupRepository,userRepository, subjectRepository,markRepository,absenteeismRepository,validator, errors) => {
     return {
         create: create,
         readAll:readAll,
         read:read,
-        del:del
+        del:del,
+        newMark:newMark,
+        getMark:getMark,
+        newAbsenteeism:newAbsenteeism,
+        getAbsenteeism:getAbsenteeism
     };
+    function getMark(idTraining, idUser)
+    {
+         return new Promise((resolve, reject) => {
+            trainingRepository.findOne({where:{id:idTraining}})
+            .then(training=>{
+                console.log(training);
+                if(training.userId!=idUser) reject({success: false, message:"Access denied"});
+                else return markRepository.findAll({where:{trainingId: idTraining}})
+            })
+            .then(marks=> resolve({success: true, data: marks}))
+            .catch(err=> reject({success: false, message:"Fatal Error"}))
+         })
+    }
+    function getAbsenteeism(idTraining, idUser)
+    {
+         return new Promise((resolve, reject) => {
+            trainingRepository.findOne({where:{id:idTraining}})
+            .then(training=>{
+                console.log(training);
+                if(training.userId!=idUser) reject({success: false, message:"Access denied"});
+                else return absenteeismRepository.findAll({where:{trainingId: idTraining}})
+            })
+            .then(absenteeism=> resolve({success: true, data: absenteeism}))
+            .catch(err=> reject({success: false, message:"Fatal Error"}))
+         })
+    }
+    function newMark(data, idTraining, idUser)
+    {
+        return new Promise((resolve, reject) => {
+            trainingRepository.findOne({where:{id:idTraining}})
+            .then(training=>{
+                console.log(training);
+                if(training.userId!=idUser) reject({success: false, message:"Access denied"});
+                else return studentsRepository.findOne({where:{id: data.student, groupId:training.groupId}})
+            })
+            .then(student=> {
+                if(student==null) reject({success: false, message:"Error student"})
+                else return absenteeismRepository.findOne({where:{studentId: data.student,date: data.date, trainingId: idTraining}})
+            })
+            .then(absenteeisms=>{
+                if(absenteeisms!=null) reject({success: false, message:"This student absenteeism on training"})
+                else return markRepository.create({
+                    studentId: data.student,
+                    trainingId: idTraining,
+                    mark: data.mark,
+                    date: data.date
+                })
+            })
+            .then(mark=>{console.log(mark); resolve({success: true})})
+            .catch(err=>{console.log(err);reject(err)});
+        })
+    }
+    function newAbsenteeism(data, idTraining, idUser)
+    {
+         return new Promise((resolve, reject) => {
+             trainingRepository.findOne({where:{id:idTraining}})
+            .then(training=>{
+                console.log("OK");
+                if(training.userId!=idUser) throw reject({success: false, message:"Access denied"});
+                else {
+                    console.log("OK1");
+                    return studentsRepository.findOne({where:{id: data.student, groupId:training.groupId}})
+                }
+            })
+            .then(student=> {
+                console.log("OK2");
+                if(student==null) throw reject({success: false, message:"Error student"})
+                else
+                {
+                    console.log(data.student, data.date, idTraining)
+                    return markRepository.findOne({where:{studentId: data.student,date: data.date, trainingId: idTraining}})
+                }
+            })
+            .then(mark=>{
+                console.log("OK3" + mark);
+                if(mark!=null) return mark.destroy();
+                else return true;
+            })
+            .then(rez=>{
+                console.log("OK4");
+                return absenteeismRepository.create({
+                    studentId: data.student,
+                    trainingId: idTraining,
+                    absenteeism: data.absenteeism,
+                    date: data.date
+                })
+            })
+            .then(mark=>{console.log("mark"); resolve({success: true})})
+            .catch(err=>{
+                console.log("Err");
+                console.log(err);reject(err)});
+         })
+    }
     function create(data,facultyId)
     {
         return new Promise((resolve, reject) => {

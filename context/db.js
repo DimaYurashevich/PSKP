@@ -8,7 +8,6 @@ module.exports = (Sequelize, config) => {
     const sequelize = new Sequelize(config.db.name, config.db.user, config.db.password, options);
 
     const Absenteeism = require('../models/absenteeism')(Sequelize, sequelize);
-    const DatesSubject = require('../models/datesSubject')(Sequelize, sequelize);
     const Faculty = require('../models/faculty')(Sequelize, sequelize);
     const Group = require('../models/group')(Sequelize, sequelize);
     const Mark = require('../models/mark')(Sequelize, sequelize);
@@ -34,9 +33,6 @@ module.exports = (Sequelize, config) => {
     Faculty.hasMany(Subject);
     Subject.belongsTo(Faculty);
 
-    Student.hasMany(Mark);
-    Mark.belongsTo(Student);
-
     /*User.hasMany(Training);
     Training.belongsTo(User);
 
@@ -54,22 +50,21 @@ module.exports = (Sequelize, config) => {
     Group.hasMany(Training);
     Training.belongsTo(Group);
 
-    Training.hasMany(DatesSubject);
-    DatesSubject.belongsTo(Training);
+    Student.hasMany(Mark);
+    Mark.belongsTo(Student);
 
-    DatesSubject.hasMany(Mark);
-    Mark.belongsTo(DatesSubject);
+    Training.hasMany(Mark);
+    Mark.belongsTo(Training);
 
     Student.hasMany(Absenteeism);
     Absenteeism.belongsTo(Student);
 
-    DatesSubject.hasMany(Absenteeism);
-    Absenteeism.belongsTo(DatesSubject);
+    Training.hasMany(Absenteeism);
+    Absenteeism.belongsTo(Training);
 
     
     return {
         absenteeism: Absenteeism,
-        datesSubject:DatesSubject,
         faculty: Faculty,
         group: Group,
         mark: Mark,

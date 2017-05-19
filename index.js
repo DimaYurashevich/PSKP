@@ -14,14 +14,13 @@ const dbcontext = require('./context/db')(Sequelize, config);
 const validator = require('./utils/validate')(dbcontext.user,dbcontext.group,dbcontext.faculty,dbcontext.subject, dbcontext.training);
 const authService = require('./services/auth')(dbcontext.user, dbcontext.role, dbcontext.userRole, dbcontext.faculty, validator, errors, config);
 const absenteeismService = require('./services/absenteeism')(dbcontext.absenteeism,validator, errors);
-const datesSubjectService = require('./services/datesSubject')(dbcontext.datesSubject, validator, errors);
 const groupService = require('./services/group')(dbcontext.group,dbcontext.student,validator, errors);
 const markService = require('./services/mark')(dbcontext.mark, validator, errors);
 const studentService = require('./services/student')(dbcontext.student,validator, errors);
 const subjectService = require('./services/subject')(dbcontext.subject,validator, errors);
-const trainingService=require('./services/training')(dbcontext.training,dbcontext.group,dbcontext.user,dbcontext.subject, validator, errors);
+const trainingService=require('./services/training')(dbcontext.training,dbcontext.student,dbcontext.group,dbcontext.user,dbcontext.subject,dbcontext.mark,dbcontext.absenteeism, validator, errors);
 const userService= require('./services/user')(dbcontext.user);
-const apiController = require('./controllers/api')(authService,groupService,studentService,subjectService,datesSubjectService,markService,absenteeismService,trainingService,userService, config);
+const apiController = require('./controllers/api')(authService,groupService,studentService,subjectService,markService,absenteeismService,trainingService,userService, config);
 
 const app = express();
 

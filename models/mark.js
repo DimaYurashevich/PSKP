@@ -6,7 +6,12 @@ module.exports = (Sequelize, sequelize) =>{
             autoIncrement: true
         },
         mark:{
-            type: Sequelize.INTEGER
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
+        date:{
+            type: Sequelize.DATEONLY,
+            allowNull: false
         }
     });
 }

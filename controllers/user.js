@@ -1,10 +1,10 @@
 const express = require('express');
-module.exports = (trainingService, getId) => {
+module.exports = (userService, getId) => {
     const router = express.Router();
 
     router.get('/',(req, res) =>
     {
-        trainingService.readAll()
+        userService.readAll()
         .then(data=>res.json(data))
         .catch(err=>res.json(err))
     });

@@ -20,6 +20,30 @@ module.exports = (trainingService, getId) => {
         .then(data=>res.json(data))
         .catch(err=>res.json(err));
     });
+    router.post('/:id/mark',(req, res) =>
+    {
+        trainingService.newMark(req.body,req.params.id,getId(req.cookies["x-access-token"]).faculty)
+        .then(data=>res.json(data))
+        .catch(err=>res.json(err))
+    })
+    router.post('/:id/absent',(req, res) =>
+    {
+        trainingService.newAbsenteeism(req.body,req.params.id,getId(req.cookies["x-access-token"]).faculty)
+        .then(data=>res.json(data))
+        .catch(err=>res.json(err))
+    })
+    router.get('/:id/absent',(req, res) =>
+    {
+        trainingService.getAbsenteeism(req.params.id,getId(req.cookies["x-access-token"]).user)
+        .then(data=>res.json(data))
+        .catch(err=>res.json(err))
+    })
+    router.get('/:id/mark',(req, res) =>
+    {
+        trainingService.getMark(req.params.id,getId(req.cookies["x-access-token"]).user)
+        .then(data=>res.json(data))
+        .catch(err=>res.json(err))
+    })
     router.get('/',(req, res) =>
     {
         trainingService.read(getId(req.cookies["x-access-token"]).user)

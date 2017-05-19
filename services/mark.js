@@ -1,21 +1,10 @@
 module.exports = (markRepository,validator, errors) => {
     return {
-        /*create: create,
-        readMark:readMark*/
+        /*create: create*/
+        /*readMark:readMark*/
     };
-    /*function create(data)
-    {
-        return new Promise((resolve, reject) => {
-            markRepository.create({
-                studentId: data.student,
-                dateSubjectId: data.dateSubject,
-                mark: (data.mark!=undefined)?data.mark:null
-            })
-            .then(mark=> resolve({success: true}))
-            .catch(err=>reject(err));
-        })
-    }
-    function readMark(student, ds)
+    
+   /* function readMark(student, ds)
     {
         return new Promise((resolve, reject) => {
             Promise.all([
@@ -33,7 +22,7 @@ module.exports = (markRepository,validator, errors) => {
         })
     }*/
 
-    function getTable(group, subjectId) {
+    /*function getTable(group, subjectId) {
         return new Promise((resolve, reject)=>{
             markRepository.find({
                 where: {
@@ -95,5 +84,5 @@ module.exports = (markRepository,validator, errors) => {
                 // resolve(students, dates);
             });
         })
-    }
+    }*/
 }

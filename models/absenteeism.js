@@ -6,7 +6,12 @@ module.exports = (Sequelize, sequelize) =>{
             autoIncrement: true
         },
         absenteeism:{
-            type: Sequelize.BOOLEAN
+            type: Sequelize.BOOLEAN,
+             allowNull: false
+        },
+        date:{
+            type: Sequelize.DATEONLY,
+            allowNull: false
         }
     });
 }

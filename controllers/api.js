@@ -1,12 +1,12 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
-module.exports = (authService,groupService,studentService,subjectService,datesSubjectService,markService,absenteeismService,trainingService,userService, config) => {
+module.exports = (authService,groupService,studentService,subjectService,markService,absenteeismService,trainingService,userService, config) => {
     const router = express.Router();
     const authController = require('./auth')(authService);
     const groupController = require('./group')(groupService, getId);
     const studentController = require('./student')(studentService, getId);
-    const subjectController = require('./subject')(subjectService, datesSubjectService,markService,absenteeismService,groupService,studentService, getId);
+    const subjectController = require('./subject')(subjectService, markService,absenteeismService,groupService,studentService, getId);
     const trainingController=require('./training')(trainingService, getId);
     const userController=require('./user')(userService);
 

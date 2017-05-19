@@ -1,5 +1,5 @@
 const express = require('express');
-module.exports = (subjectService,datesSubjectService,markService,absenteeismService,groupService,studentService,getId) => {
+module.exports = (subjectService,markService,absenteeismService,groupService,studentService,getId) => {
     const router = express.Router();
 
     router.post('/',(req, res) =>
