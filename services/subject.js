@@ -65,7 +65,7 @@ module.exports = (subjectRepository, validator, errors) => {
     function readAll(id)
     {   
         return new Promise((resolve, reject) => {
-            subjectRepository.findAll({where:{facultyId: id},attributes: ['id','course','name','fullName']})
+            subjectRepository.findAll({where:{facultyId: id},attributes: ['id','name','fullName']})
             .then(subject=> resolve({success: true, data: subject}))
             .catch(err=> reject(err));
         })

@@ -25,7 +25,7 @@ module.exports = (authService) => {
     router.get('/logout',(req, res) =>
     {
         res.cookie('x-access-token',"");
-        res.json({ success: "user logout"});
+        res.json({ success: true});
     });
     return router;
 }

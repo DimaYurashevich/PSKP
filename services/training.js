@@ -2,7 +2,8 @@ module.exports = (trainingRepository,groupRepository,userRepository, subjectRepo
     return {
         create: create,
         readAll:readAll,
-        read:read
+        read:read,
+        del:del
     };
     function create(data,facultyId)
     {
@@ -33,9 +34,10 @@ module.exports = (trainingRepository,groupRepository,userRepository, subjectRepo
     function readAll(id)
     {   
         return new Promise((resolve, reject) => {
-            trainingRepository.findAll({ include: [{model: groupRepository, where:{facultyId:id},attributes: ['id','course','group','subgroup'] },
-                                                    {model: userRepository, attributes: ['id','surname','firstname','patronymic']},
-                                                    {model: subjectRepository, attributes: ['id','course','name','fullName']}]})
+            trainingRepository.findAll({ include: [{model: groupRepository, where:{facultyId:id},attributes: ['course','group','subgroup'] },
+                                                    {model: userRepository, attributes: ['surname','firstname','patronymic']},
+                                                    {model: subjectRepository, attributes: ['name','fullName']}],
+                                        attributes: ['id']})
             .then(subject=> resolve({success: true, data: subject}))
             .catch(err=> reject(err));
         })
@@ -43,9 +45,27 @@ module.exports = (trainingRepository,groupRepository,userRepository, subjectRepo
     function read(idUser)
     {
         return new Promise((resolve, reject) => {
-            trainingRepository.findAll({ include: [{model: userRepository, where:{id:idUser}}]})
+            trainingRepository.findAll({ include: [{model: userRepository, where:{id:idUser}},
+                                                    {model: subjectRepository, attributes: ['name','fullName']},
+                                                    {model: groupRepository,attributes: ['course','group','subgroup'] }]})
             .then(subject=> resolve({success: true, data: subject}))
             .catch(err=> reject(err));
+        })
+    }
+    function del(id, facultyId)
+    {
+        return new Promise((resolve, reject) => {
+            trainingRepository.findOne({ include: [{model: groupRepository, attributes:["id","facultyId"]}], where:{id:id}})
+            .then(data=>{
+                if(data==null) reject({success:false, message: "Error id"})
+                else {
+                    if(data.group.facultyId!=facultyId) reject({success:false, message: "Access is denied"})
+                    else return data.destroy();
+                }
+            })
+            .then(data=> resolve({success: true}))
+            .catch(err=>{console.log(err);reject({success:false, message: "Fatal Error"})})
+
         })
     }
 }

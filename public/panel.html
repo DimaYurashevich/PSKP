@@ -228,7 +228,7 @@
                         if(data.success==true)
                         {
                             console.log(data);
-                            t.getGroup();
+                            t.getTraining();
                             ReactDOM.render(<Success/>, document.getElementById('status'));
                         }
                         else
@@ -242,10 +242,15 @@
                 })
             },
             render() {
-                let listItems;
-                return (<div>
-                            <div><ul className="list-group">{listItems}</ul></div>
-                            </div>)}
+                let listItems=(this.state.training).map((number) => <div className="col-sm-9 list-group-item"  id={number.id}>
+                        <span className="col-sm-2">{number.subject.name}</span>
+                        <span className="col-sm-6">{number.user.surname} {(number.user.firstname).substring(0,1)}. {(number.user.patronymic).substring(0,1)}.</span>
+                        <span className="col-sm-3">{number.group.course}к. {number.group.group}-{number.group.subgroup}</span>
+                        <span className="badge col-sm-1" onClick={() => this.del(number.id)}>
+                            <span className="glyphicon glyphicon-remove"></span>
+                        </span>
+                    </div>);
+                return (<div>{listItems}</div>)}
         });
         let CGroup = React.createClass({
             render() {
@@ -637,22 +642,58 @@
                 switch(type) {
                     case "group": ReactDOM.render(<Group/>, document.getElementById('body')); break;
                     case "subject": ReactDOM.render(<Subject/>, document.getElementById('body')); break;
-                    case "training": ReactDOM.render(<Student/>, document.getElementById('body')); break;
+                    case "student": ReactDOM.render(<Student/>, document.getElementById('body')); break;
                     case "training": ReactDOM.render(<Training/>, document.getElementById('body')); break;
                 }
             }
         });
         let STraining = React.createClass({
-            render() {
-                return (<div>Training</div>)}
+            getInitialState() {
+                return {training: []};
+            },
+            componentDidMount()
+            {
+                this.getTraining();
+            },
+            getTraining(){
+                var t=this;
+                $.ajax({
+                    type: "GET",
+                    url: "/api/training/",
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data.data);
+                            t.setState({training: data.data});
+                        }
+                        else
+                        {
+                            console.log(data);
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            render()
+            {
+                let listItems=(this.state.training).map((number) => <button key={"training"+number.id} type="button" className="list-group-item" onClick={() => this.show(number.id)}>{number.subject.name}  {number.group.course}к. {number.group.group}-{number.group.subgroup}</button>);
+                return (<div className="list-group">{listItems}</div>)
+                }
         });
         let Index = React.createClass({
             render() {
-                return (<div><nav className="navbar navbar-inverse">
-                            <div className="container-fluid">
+                return (<div><nav className="navbar navbar-inverse ">
+                            <div className="container-fluid col-sm-11">
                                 <button className="btn btn-danger navbar-btn" onClick={()=>this.show("create")}>Создать</button>
                                 <button className="btn btn-danger navbar-btn" onClick={()=>this.show("show")}>Просмотреть</button>
                                 <button className="btn btn-danger navbar-btn" onClick={()=>this.show("training")}>Предметы</button>
+                            </div>
+                            <div className="col-sm-1">
+                                <button className="btn badge" onClick={()=>this.logout()}>Выйти</button>
                             </div>
                         </nav>
                         <div id='status'>
@@ -673,6 +714,26 @@
                     case "show": ReactDOM.render(<Show/>, document.getElementById('menu')); break;
                     case "training": ReactDOM.render(<STraining/>, document.getElementById('menu')); break;
                 }
+            },
+            logout(){
+                $.ajax({
+                    type: "GET",
+                    url: "/api/auth/logout",
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            window.location="/index.html"
+                        }
+                        else
+                        {
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
             }
                 });
         ReactDOM.render(<Index/>, document.getElementById('app'));

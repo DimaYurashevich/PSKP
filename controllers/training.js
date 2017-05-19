@@ -14,6 +14,12 @@ module.exports = (trainingService, getId) => {
         .then(data=>res.json(data))
         .catch(err=>res.json(err))
     });
+    router.delete("/:id",(req, res) =>
+    {
+        trainingService.del(req.params.id, getId(req.cookies["x-access-token"]).faculty)
+        .then(data=>res.json(data))
+        .catch(err=>res.json(err));
+    });
     router.get('/',(req, res) =>
     {
         trainingService.read(getId(req.cookies["x-access-token"]).user)

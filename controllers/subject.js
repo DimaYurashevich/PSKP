@@ -17,8 +17,8 @@ module.exports = (subjectService,datesSubjectService,markService,absenteeismServ
     router.get('/',(req, res) =>
     {
         subjectService.readAll(getId(req.cookies["x-access-token"]).faculty)
-        .then(data=>res.json(data))
-        .catch(err=>res.json(err));
+        .then(data=>{console.log(data);res.json(data)})
+        .catch(err=>{console.log(err);res.json(err)});
     });
     /*router.post('/:id/newdate',(req, res) =>
     {
