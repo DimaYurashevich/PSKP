@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://unpkg.com/react@15/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
+        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+        <script src="https://unpkg.com/babel-polyfill@6.16.0//dist/polyfill.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/babel">
+        let Success = React.createClass({
+            componentDidMount()
+            {
+                setTimeout(()=>{$('#status').empty()}, 3000);
+            },
+            render() {
+                return (<div className="alert alert-success">OK!</div>)}
+        });
+        let Error = React.createClass({
+            componentDidMount()
+            {
+                setTimeout(()=>{$('#status').empty()}, 3000);
+            },
+            render() {
+                return (<div className="alert alert-danger">{this.props.error}</div>)}
+        });
+        let Group = React.createClass({
+            getInitialState() {
+                return {group: []};
+            },
+            getGroup()
+            {
+                var t=this;
+                    $.ajax({
+                            type: "GET",
+                            url: "/api/group",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.success==true)
+                                {
+                                    console.log(data.data);
+                                    t.setState({group: data.data});
+                                }
+                                else
+                                {
+                                    console.log(data);
+                                    ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                                }
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                    })
+            },
+            componentDidMount()
+            {
+                this.getGroup();
+            },
+            nextCours(){
+                var t=this;
+                $.ajax({
+                    type: "PUT",
+                    url: "/api/group",
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data);
+                            t.getGroup();
+                            ReactDOM.render(<Success/>, document.getElementById('status'));
+                        }
+                        else
+                        {
+                            console.log(data);
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            del(id){
+                var t=this;
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/group/"+id,
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data);
+                            t.getGroup();
+                            ReactDOM.render(<Success/>, document.getElementById('status'));
+                        }
+                        else
+                        {
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            render() {
+                const listItems = (this.state.group).map((number) => <li className="list-group-item"  key={number.id}>
+                    Курс:{number.course} Группа:{number.group} Подгруппа:{number.subgroup}
+                    <span className="badge" onClick={() => this.del(number.id)}>
+                        <span className="glyphicon glyphicon-remove"></span>
+                    </span>
+                </li>);
+                let button;
+                if((this.state.group).length!=0) {
+                    button=<div><button type="button" className="btn btn-default" onClick={this.nextCours}>Перевести все группы на следующий курс</button></div>;
+                }
+                return (<div>
+                            <div><ul className="list-group">{listItems}</ul></div>
+                            {button}
+                            </div>)}
+        });
+        let Subject = React.createClass({
+            getInitialState() {
+                return {subject: []};
+            },
+            getSubject()
+            {
+                var t=this;
+                    $.ajax({
+                            type: "GET",
+                            url: "/api/subject",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.success==true)
+                                {
+                                    console.log(data.data);
+                                    t.setState({subject: data.data});
+                                }
+                                else
+                                {
+                                    console.log(data);
+                                    ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                                }
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                    })
+            },
+            componentDidMount()
+            {
+                this.getSubject();
+            },
+            del(id){
+                var t=this;
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/subject/"+id,
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data);
+                            t.getSubject();
+                            ReactDOM.render(<Success/>, document.getElementById('status'));
+                        }
+                        else
+                        {
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            render() {
+                const listItems = (this.state.subject).map((number) => <li className="list-group-item"  key={number.id}>
+                    Предмет: {number.name} ({number.fullName})
+                    <span className="badge" onClick={() => this.del(number.id)}>
+                        <span className="glyphicon glyphicon-remove"></span>
+                    </span>
+                </li>);
+                return (<div>
+                            <div><ul className="list-group">{listItems}</ul></div>
+                        </div>)}
+        });
+        let Training = React.createClass({
+            getInitialState() {
+                return {training: []};
+            },
+            getTraining()
+            {
+                var t=this;
+                    $.ajax({
+                            type: "GET",
+                            url: "/api/training/faculty",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.success==true)
+                                {
+                                    console.log(data.data);
+                                    t.setState({training: data.data});
+                                }
+                                else
+                                {
+                                    console.log(data);
+                                    ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                                }
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                    })
+            },
+            componentDidMount()
+            {
+                this.getTraining();
+            },
+            del(id){
+                var t=this;
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/training/"+id,
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data);
+                            t.getGroup();
+                            ReactDOM.render(<Success/>, document.getElementById('status'));
+                        }
+                        else
+                        {
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            render() {
+                let listItems;
+                return (<div>
+                            <div><ul className="list-group">{listItems}</ul></div>
+                            </div>)}
+        });
+        let CGroup = React.createClass({
+            render() {
+                return (<div className="container">
+                            <div className="row">
+                                <h1 className="text-center">Новая группа</h1>
+                                    <div className="form-horizontal">
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Курс</label>
+                                            <div className="col-sm-3">
+                                                <input type="text" className="form-control" id="inputCourse"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Группа</label>
+                                            <div className="col-sm-3">
+                                                <input type="text" className="form-control" id="inputGroup"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Подгруппа</label>
+                                            <div className="col-sm-3">
+                                                <input type="text" className="form-control" id="inputSubGroup"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group last">
+                                            <div className="col-sm-offset-3 col-sm-9">
+                                                <button className="btn btn-default btn-sm" onClick={this.create}>Создать</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>)},
+                create(){
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/group",
+                        dataType: "json",
+                        data: { course: $('#inputCourse').val(),
+                                group: $('#inputGroup').val(),
+                                subgroup:$('#inputSubGroup').val()},
+                        success: function (data) {
+                            if(data.success==true)
+                            {
+                                $('#error').empty();
+                                ReactDOM.render(<Success/>, document.getElementById('status'));
+                            }
+                            else
+                            {
+                                ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                })
+        }});
+        let CSubject = React.createClass({
+            render() {
+                return (<div className="container">
+                            <div className="row">
+                                <h1 className="text-center">Новый предмет</h1>
+                                    <div className="form-horizontal">
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Имя</label>
+                                            <div className="col-sm-3">
+                                                <input type="text" className="form-control" id="inputFullName"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Краткое Имя</label>
+                                            <div className="col-sm-3">
+                                                <input type="text" className="form-control" id="inputName"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group last">
+                                            <div className="col-sm-offset-3 col-sm-9">
+                                                <button className="btn btn-default btn-sm" onClick={this.create}>Создать</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>)},
+                create(){
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/subject",
+                        dataType: "json",
+                        data: { fullName: $('#inputFullName').val(),
+                                name: $('#inputName').val()},
+                        success: function (data) {
+                            if(data.success==true)
+                            {
+                                $('#error').empty();
+                                ReactDOM.render(<Success/>, document.getElementById('status'));
+                            }
+                            else
+                            {
+                                ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                })
+        }});
+        let CStudent = React.createClass({
+            getInitialState() {
+                return {group: []};
+            },
+            getGroup()
+            {
+                var t=this;
+                    $.ajax({
+                            type: "GET",
+                            url: "/api/group",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.success==true)
+                                {
+                                    console.log(data.data);
+                                    t.setState({group: data.data});
+                                }
+                                else
+                                {
+                                    console.log(data);
+                                    ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                                }
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                    })
+            },
+            componentDidMount()
+            {
+                this.getGroup();
+            },
+            render() {
+                let listItems = (this.state.group).map((number) => <option value={number.id} className="list-group-item">
+                    Курс:{number.course} Группа:{number.group} Подгруппа:{number.subgroup}
+                </option>);
+                return (<div className="container">
+                            <div className="row">
+                                <h1 className="text-center">Новый студент</h1>
+                                    <div className="form-horizontal">
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Имя</label>
+                                            <div className="col-sm-3">
+                                                <input type="text" className="form-control" id="inputFName"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Фамилия</label>
+                                            <div className="col-sm-3">
+                                                <input type="text" className="form-control" id="inputSName"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Отчество</label>
+                                            <div className="col-sm-3">
+                                                <input type="text" className="form-control" id="inputPatr"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Группа</label>
+                                            <div className="col-sm-3">
+                                                <select className="form-control" id="inputSelectGroup">
+                                                    {listItems}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="form-group last">
+                                            <div className="col-sm-offset-3 col-sm-9">
+                                                <button className="btn btn-default btn-sm" onClick={this.create}>Создать</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>)},
+                create(){
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/student",
+                        dataType: "json",
+                        data: { surname: $('#inputFName').val(),
+                                firstname: $('#inputSName').val(),
+                                patronymic:$('#inputPatr').val(),
+                                groupId: $('#inputSelectGroup').val()},
+                        success: function (data) {
+                            if(data.success==true)
+                            {
+                                $('#error').empty();
+                                ReactDOM.render(<Success/>, document.getElementById('status'));
+                            }
+                            else
+                            {
+                                ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                })
+                }
+        });
+        let CTraining = React.createClass({
+            getInitialState() {
+                return {group: [],
+                user:[],
+                subject:[]};
+            },
+            getGroup()
+            {
+                var t=this;
+                    $.ajax({
+                            type: "GET",
+                            url: "/api/group",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.success==true)
+                                {
+                                    console.log(data.data);
+                                    t.setState({group: data.data});
+                                }
+                                else
+                                {
+                                    console.log(data);
+                                    ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                                }
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                    })
+            },
+            getUser()
+            {
+                var t=this;
+                    $.ajax({
+                            type: "GET",
+                            url: "/api/user",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.success==true)
+                                {
+                                    console.log(data.data);
+                                    t.setState({user: data.data});
+                                }
+                                else
+                                {
+                                    console.log(data);
+                                    ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                                }
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                    })
+            },
+            getSubject()
+            {
+                var t=this;
+                    $.ajax({
+                            type: "GET",
+                            url: "/api/subject",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.success==true)
+                                {
+                                    console.log(data.data);
+                                    t.setState({subject: data.data});
+                                }
+                                else
+                                {
+                                    console.log(data);
+                                    ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                                }
+                            },
+                            error: function (data) {
+                                console.log("ERRRR!");
+                                console.log(data);
+                            }
+                    })
+            },
+            componentDidMount()
+            {
+                this.getGroup();
+                this.getSubject();
+                this.getUser();
+            },
+            render() {
+                let listItems1 = (this.state.group).map((number) => <option value={number.id} className="list-group-item">
+                    Курс:{number.course} Группа:{number.group} Подгруппа:{number.subgroup}
+                </option>);
+                let listItems2 = (this.state.subject).map((number) => <option className="list-group-item"  value={number.id}>
+                    {number.name} ({number.fullName})
+                </option>);
+                let listItems3 = (this.state.user).map((number) => <option className="list-group-item"  value={number.id}>
+                    {number.surname} {number.firstname} {number.patronymic}
+                </option>);
+                return (<div className="container">
+                            <div className="row">
+                                <h1 className="text-center">Новое занятие</h1>
+                                    <div className="form-horizontal">
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Группа</label>
+                                            <div className="col-sm-3">
+                                                <select className="form-control" id="inputGroup">
+                                                    {listItems1}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Предмет</label>
+                                            <div className="col-sm-3">
+                                                <select className="form-control" id="inputSubject">
+                                                    {listItems2}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Преподаватель</label>
+                                            <div className="col-sm-3">
+                                                <select className="form-control" id="inputTeacher">
+                                                    {listItems3}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="form-group last">
+                                            <div className="col-sm-offset-3 col-sm-9">
+                                                <button className="btn btn-default btn-sm" onClick={this.create}>Создать</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>)},
+                create(){
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/training",
+                        dataType: "json",
+                        data: { group: $('#inputGroup').val(),
+                                subject: $('#inputSubject').val(),
+                                user: $('#inputTeacher').val()},
+                        success: function (data) {
+                            if(data.success==true)
+                            {
+                                $('#error').empty();
+                                ReactDOM.render(<Success/>, document.getElementById('status'));
+                            }
+                            else
+                            {
+                                ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                })
+        }
+        });
+        let Create = React.createClass({
+            render() {
+                return (<div className="list-group">
+                            <button type="button" className="list-group-item" onClick={()=>this.show("group")}>Группу</button>
+                            <button type="button" className="list-group-item" onClick={()=>this.show("subject")}>Предмет</button>
+                            <button type="button" className="list-group-item" onClick={()=>this.show("student")}>Студента</button>
+                            <button type="button" className="list-group-item" onClick={()=>this.show("training")}>Занятие</button>
+                        </div>)},
+            show(type){
+                switch(type) {
+                    case "group": ReactDOM.render(<CGroup/>, document.getElementById('body')); break;
+                    case "subject": ReactDOM.render(<CSubject/>, document.getElementById('body')); break;
+                    case "student": ReactDOM.render(<CStudent/>, document.getElementById('body')); break;
+                    case "training": ReactDOM.render(<CTraining/>, document.getElementById('body')); break;
+                }
+            }
+        });
+        let Show = React.createClass({
+            render() {
+                return (<div className="list-group">
+                            <button type="button" className="list-group-item" onClick={()=>this.show("group")}>Группы</button>
+                            <button type="button" className="list-group-item" onClick={()=>this.show("subject")}>Предметы</button>
+                            <button type="button" className="list-group-item" onClick={()=>this.show("student")}>Студенты</button>
+                            <button type="button" className="list-group-item" onClick={()=>this.show("training")}>Занятия</button>
+                        </div>)},
+            show(type){
+                switch(type) {
+                    case "group": ReactDOM.render(<Group/>, document.getElementById('body')); break;
+                    case "subject": ReactDOM.render(<Subject/>, document.getElementById('body')); break;
+                    case "training": ReactDOM.render(<Student/>, document.getElementById('body')); break;
+                    case "training": ReactDOM.render(<Training/>, document.getElementById('body')); break;
+                }
+            }
+        });
+        let STraining = React.createClass({
+            render() {
+                return (<div>Training</div>)}
+        });
+        let Index = React.createClass({
+            render() {
+                return (<div><nav className="navbar navbar-inverse">
+                            <div className="container-fluid">
+                                <button className="btn btn-danger navbar-btn" onClick={()=>this.show("create")}>Создать</button>
+                                <button className="btn btn-danger navbar-btn" onClick={()=>this.show("show")}>Просмотреть</button>
+                                <button className="btn btn-danger navbar-btn" onClick={()=>this.show("training")}>Предметы</button>
+                            </div>
+                        </nav>
+                        <div id='status'>
+                        </div>
+                        <div>
+                            <div id="menu" className="col-xs-3">
+                                
+                            </div>
+                            <div id="body" className="col-xs-9">
+
+                            </div>
+                        </div>
+                        </div>)},
+            show(type)
+            {
+                switch(type) {
+                    case "create": ReactDOM.render(<Create/>, document.getElementById('menu')); break;
+                    case "show": ReactDOM.render(<Show/>, document.getElementById('menu')); break;
+                    case "training": ReactDOM.render(<STraining/>, document.getElementById('menu')); break;
+                }
+            }
+                });
+        ReactDOM.render(<Index/>, document.getElementById('app'));
+        </script>
+    </head>
+    <body>
+        <div id="app"></div>
+    </body>
+</html>

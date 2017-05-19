@@ -1,43 +1,16 @@
-module.exports = (userRepository, errors) => {
-    const BaseService = require('./base');
-
-    Object.setPrototypeOf(UserService.prototype, UserService.prototype);
-
-    function PostService(userRepository, errors) {
-        BaseService.call(this, userRepository, errors);
-
-        /*let self = this;
-
-        self.create = create;
-        self.update = update;
-
-        function create(data) {
-            return new Promise((resolve, reject) => {
-                let group = {
-                    course: data.course,
-                    group: data.group,
-                    subgroup: data.subgroup 
-                };
-
-                self.baseCreate(group)
-                    .then(resolve).catch(reject);
-            });
-        }
-
-        function update(id, data){
-            return new Promise((resolve, reject) => {
-                let group = {
-                    course: data.course,
-                    group: data.group,
-                    subgroup: data.subgroup 
-                };
-
-                self.baseUpdate(id, group)
-                    .then(resolve).catch(reject);
-            });
-        }*/
-
+module.exports = (userRepository) => {
+    return {
+        readAll: readAll
+    };
+   
+    function readAll()
+    {
+        return new Promise((resolve, reject) => {
+            userRepository.findAll({attributes: ['id','surname','firstname','patronymic']})
+            .then(data=>{
+                return resolve({success: true,data: data})
+            })
+            .catch(err=>{return reject({success: false})})
+        })
     }
-
-    return new UserService(userRepository, errors);
-};
+}

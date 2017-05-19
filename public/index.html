@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://unpkg.com/react@15/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
+        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+        <script src="https://unpkg.com/babel-polyfill@6.16.0//dist/polyfill.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/babel">
+        let Index = React.createClass({
+            render() {
+                return (
+                    <div className="container">
+                        <div className="row">
+                            <h1 className="text-center">Учет студентов</h1>
+                            <div className="login-wrap">
+                                    <div className="form-horizontal">
+                                        <div className="form-group">
+                                            <label htmlFor="inputEmail3" className="col-sm-3 control-label">E-mail</label>
+                                            <div className="col-sm-9">
+                                                <input type="text" className="form-control" id="inputUser"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="inputPassword3" className="col-sm-3 control-label">Пароль</label>
+                                            <div className="col-sm-9">
+                                                <input type="password" className="form-control" id="inputPsw"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group last">
+                                            <div className="col-sm-offset-3 col-sm-9">
+                                                <button className="btn btn-success btn-sm" onClick={this.login}>Войти</button>
+                                                <button className="btn btn-default btn-sm" onClick={this.register}>Зарегистрироваться</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                        <div id="error">
+                        </div>
+                    </div>)},
+                login()
+                {
+                    $('#error').text();
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/auth/login",
+                        dataType: "json",
+                        data: {login: $('#inputUser').val(),
+                                password: $('#inputPsw').val()},
+                        success: function (data) {
+                            if(data.success==true)
+                            {
+                                window.location="/panel.html"
+                            }
+                            else
+                            {
+                                $('#error').text(data.message);
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                        });
+                },
+                register()
+                {
+                   window.location="/register.html"
+                }
+                });
+        ReactDOM.render(<Index/>, document.getElementById('app'));
+        </script>
+    </head>
+    <body>
+        <div id="app"></div>
+    </body>
+</html>

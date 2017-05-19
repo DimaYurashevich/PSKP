@@ -1,17 +1,16 @@
 module.exports = (Sequelize, sequelize) =>{
-     return sequelize.define('subject', {
+     return sequelize.define('dateSubject', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
-            type: Sequelize.STRING,
+        date:{
+            type: Sequelize.DATEONLY,
             allowNull: false
         },
-        fullName: {
-            type: Sequelize.STRING,
-            allowNull: false
+        info: {
+            type: Sequelize.STRING
         }
     });
 }

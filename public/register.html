@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://unpkg.com/react@15/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
+        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+        <script src="https://unpkg.com/babel-polyfill@6.16.0//dist/polyfill.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/babel">
+        let Index2 = React.createClass({
+            render() {
+                return (<div><div className="form-group">
+                                            <label  className="col-sm-3 control-label">Имя факультета</label>
+                                            <div className="col-sm-9">
+                                                <input type="text" className="form-control" id="inputFullName"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label  className="col-sm-3 control-label">Краткое имя</label>
+                                            <div className="col-sm-9">
+                                                <input type="text" className="form-control" id="inputName"/>
+                                            </div>
+                                        </div>
+                                    </div>);
+            }
+        });
+        let Index = React.createClass({
+            render() {
+                return (
+                    <div className="container">
+                        <div className="row">
+                            <h1 className="text-center">Учет студентов</h1>
+                            <h1 className="text-center">Регистрация</h1>
+                            <div className="login-wrap">
+                                    <div className="form-horizontal">
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Login</label>
+                                            <div className="col-sm-9">
+                                                <input type="text" className="form-control" id="inputLogin"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Пароль</label>
+                                            <div className="col-sm-9">
+                                                <input type="password" className="form-control" id="inputPsw"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Фамилия</label>
+                                            <div className="col-sm-9">
+                                                <input type="text" className="form-control" id="inputSN"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label">Имя</label>
+                                            <div className="col-sm-9">
+                                                <input type="text" className="form-control" id="inputFN"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label  className="col-sm-3 control-label">Отчество</label>
+                                            <div className="col-sm-9">
+                                                <input type="text" className="form-control" id="inputPatronymic"/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label  className="col-sm-3 control-label">Тип</label>
+                                            <div className="col-sm-9">
+                                                <select id="type" className="form-control" onChange={this.change}>
+                                                    <option value="teacher">Учитель</option>
+                                                    <option value="dean">Декан</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div id="dean">
+                                        </div>
+                                        <div className="form-group last">
+                                            <div className="col-sm-offset-3 col-sm-9">
+                                                <button className="btn btn-default btn-sm" onClick={this.register}>Зарегистрироваться</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                        <div id="error">
+                        </div>
+                    </div>
+                );
+            },
+            change(){
+                if($("#type").val()=="dean") ReactDOM.render(<Index2/>, document.getElementById('dean'));
+                else $("#dean").empty();
+            },
+            register(){
+                    $('#error').empty();
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/auth/register",
+                        dataType: "json",
+                        data: { login: $('#inputLogin').val(),
+                                password: $('#inputPsw').val(),
+                                surname:$('#inputSN').val(),
+                                firstname:$('#inputFN').val(),
+                                patronymic:$('#inputPatronymic').val(),
+                                facultyName:$('#inputName').val(),
+                                facultyFullName:$('#inputFullName').val(),
+                                type:$("#type").val()},
+                        success: function (data) {
+                            if(data.success==true)
+                            {
+                                window.location="/index.html"
+                            }
+                            else
+                            {
+                                $('#error').text(data.message);
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                });
+            }
+        });
+        ReactDOM.render(<Index/>, document.getElementById('app'));
+        </script>
+    </head>
+    <body>
+        <div id="app"></div>
+    </body>
+</html>

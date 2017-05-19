@@ -4,5 +4,6 @@
     "name": "pskp_kp",
     "user": "root",
     "password": ""
-  }
+  },
+  "jwt_key":"pskp17kp"
 }

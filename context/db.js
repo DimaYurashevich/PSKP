@@ -7,12 +7,15 @@ module.exports = (Sequelize, config) => {
 
     const sequelize = new Sequelize(config.db.name, config.db.user, config.db.password, options);
 
+    const Absenteeism = require('../models/absenteeism')(Sequelize, sequelize);
+    const DatesSubject = require('../models/datesSubject')(Sequelize, sequelize);
     const Faculty = require('../models/faculty')(Sequelize, sequelize);
     const Group = require('../models/group')(Sequelize, sequelize);
+    const Mark = require('../models/mark')(Sequelize, sequelize);
     const Role = require('../models/role')(Sequelize, sequelize);
     const Student = require('../models/student')(Sequelize, sequelize);
     const Subject = require('../models/subject')(Sequelize, sequelize);
-    const Teacher = require('../models/teacher')(Sequelize, sequelize);
+    const Training= require('../models/training')(Sequelize, sequelize);
     const User = require('../models/user')(Sequelize, sequelize);
     const UserRole = require('../models/userRole')(Sequelize, sequelize);
 
@@ -28,20 +31,54 @@ module.exports = (Sequelize, config) => {
     Group.hasMany(Student);
     Student.belongsTo(Group);
     
-    Group.hasMany(Subject);
-    Subject.belongsTo(Group);
+    Faculty.hasMany(Subject);
+    Subject.belongsTo(Faculty);
 
-    Teacher.hasMany(Subject);
-    Subject.belongsTo(Teacher);
+    Student.hasMany(Mark);
+    Mark.belongsTo(Student);
+
+    /*User.hasMany(Training);
+    Training.belongsTo(User);
+
+    Group.hasMany(Training);
+    Training.belongsTo(Group);
+
+    Subject.hasMany(Training);
+    Training.belongsTo(Subject);*/
+    User.hasMany(Training);
+    Training.belongsTo(User);
+
+    Subject.hasMany(Training);
+    Training.belongsTo(Subject);
+
+    Group.hasMany(Training);
+    Training.belongsTo(Group);
+
+    Training.hasMany(DatesSubject);
+    DatesSubject.belongsTo(Training);
+
+    DatesSubject.hasMany(Mark);
+    Mark.belongsTo(DatesSubject);
+
+    Student.hasMany(Absenteeism);
+    Absenteeism.belongsTo(Student);
+
+    DatesSubject.hasMany(Absenteeism);
+    Absenteeism.belongsTo(DatesSubject);
+
     
     return {
+        absenteeism: Absenteeism,
+        datesSubject:DatesSubject,
         faculty: Faculty,
         group: Group,
+        mark: Mark,
         role: Role,
         student: Student,
         subject: Subject,
-        teacher: Teacher,
+        training: Training,
         user: User,
+        userRole: UserRole,
 
         sequelize: sequelize
     }
