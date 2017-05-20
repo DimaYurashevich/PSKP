@@ -7,8 +7,22 @@ module.exports = (trainingRepository,studentsRepository, groupRepository,userRep
         newMark:newMark,
         getMark:getMark,
         newAbsenteeism:newAbsenteeism,
-        getAbsenteeism:getAbsenteeism
+        getAbsenteeism:getAbsenteeism,
+        getStudent:getStudent
     };
+    function getStudent(idTraining, idUser)
+    {
+        return new Promise((resolve, reject) => {
+            trainingRepository.findOne({where:{id:idTraining}})
+            .then(training=>{
+                console.log(idTraining + " " +idUser);
+                if(training.userId==idUser) return studentsRepository.findAll({where:{groupId: training.groupId}})
+                else throw reject({success: false, message:"Access denied"});
+            })
+            .then(students=> resolve({success: true, data: students}))
+            .catch(err=> { console.log(err); reject({success: false, message:"Fatal Error"})})
+        })
+    }
     function getMark(idTraining, idUser)
     {
          return new Promise((resolve, reject) => {
@@ -16,7 +30,7 @@ module.exports = (trainingRepository,studentsRepository, groupRepository,userRep
             .then(training=>{
                 console.log(training);
                 if(training.userId!=idUser) reject({success: false, message:"Access denied"});
-                else return markRepository.findAll({where:{trainingId: idTraining}})
+                else return markRepository.findAll({where:{trainingId: idTraining}, include:[{model:studentsRepository}]})
             })
             .then(marks=> resolve({success: true, data: marks}))
             .catch(err=> reject({success: false, message:"Fatal Error"}))
@@ -29,7 +43,7 @@ module.exports = (trainingRepository,studentsRepository, groupRepository,userRep
             .then(training=>{
                 console.log(training);
                 if(training.userId!=idUser) reject({success: false, message:"Access denied"});
-                else return absenteeismRepository.findAll({where:{trainingId: idTraining}})
+                else return absenteeismRepository.findAll({where:{trainingId: idTraining}, include:[{model:studentsRepository}]})
             })
             .then(absenteeism=> resolve({success: true, data: absenteeism}))
             .catch(err=> reject({success: false, message:"Fatal Error"}))
@@ -37,19 +51,21 @@ module.exports = (trainingRepository,studentsRepository, groupRepository,userRep
     }
     function newMark(data, idTraining, idUser)
     {
+        console.log(data);
+        console.log(idTraining);
+        console.log(idUser);
         return new Promise((resolve, reject) => {
             trainingRepository.findOne({where:{id:idTraining}})
             .then(training=>{
-                console.log(training);
-                if(training.userId!=idUser) reject({success: false, message:"Access denied"});
+                if(training.userId!=idUser) throw reject({success: false, message:"Access denied"});
                 else return studentsRepository.findOne({where:{id: data.student, groupId:training.groupId}})
             })
             .then(student=> {
-                if(student==null) reject({success: false, message:"Error student"})
+                if(student==null) throw reject({success: false, message:"Error student"})
                 else return absenteeismRepository.findOne({where:{studentId: data.student,date: data.date, trainingId: idTraining}})
             })
             .then(absenteeisms=>{
-                if(absenteeisms!=null) reject({success: false, message:"This student absenteeism on training"})
+                if(absenteeisms!=null) throw reject({success: false, message:"This student absenteeism on training"})
                 else return markRepository.create({
                     studentId: data.student,
                     trainingId: idTraining,
@@ -63,6 +79,9 @@ module.exports = (trainingRepository,studentsRepository, groupRepository,userRep
     }
     function newAbsenteeism(data, idTraining, idUser)
     {
+        console.log(data);
+        console.log(idTraining);
+        console.log(idUser);
          return new Promise((resolve, reject) => {
              trainingRepository.findOne({where:{id:idTraining}})
             .then(training=>{

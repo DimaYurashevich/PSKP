@@ -3,7 +3,17 @@
     "host": "127.0.0.1",
     "name": "pskp_kp",
     "user": "root",
-    "password": ""
+    "password": "",
+    "port":"3306",
+    "dialect":"mysql"
+  },
+  "db_heroku": {
+    "host": "",
+    "name": "",
+    "user": "",
+    "password": "",
+    "port":"",
+    "dialect":""
   },
   "jwt_key":"pskp17kp"
 }

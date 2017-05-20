@@ -682,8 +682,207 @@
             {
                 let listItems=(this.state.training).map((number) => <button key={"training"+number.id} type="button" className="list-group-item" onClick={() => this.show(number.id)}>{number.subject.name}  {number.group.course}к. {number.group.group}-{number.group.subgroup}</button>);
                 return (<div className="list-group">{listItems}</div>)
-                }
+                },
+            show(id){
+                ReactDOM.render(<GTraining training={id}/>, document.getElementById('body'));
+            }
         });
+        let GTraining=React.createClass({
+            getInitialState(){
+                return {students: [],
+                        mark:[],
+                        absent:[]};
+            },
+            getStudent(){
+                var t=this;
+                $.ajax({
+                    type: "GET",
+                    url: "/api/training/"+t.props.training+"/student",
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data.data);
+                            t.setState({students: data.data});
+                        }
+                        else
+                        {
+                            console.log(data);
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            getMark(){
+                var t=this;
+                $.ajax({
+                    type: "GET",
+                    url: "/api/training/"+t.props.training+"/mark",
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data.data);
+                            t.setState({mark: data.data});
+                        }
+                        else
+                        {
+                            console.log(data);
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            getAbsent(){
+                var t=this;
+                $.ajax({
+                    type: "GET",
+                    url: "/api/training/"+t.props.training+"/absent",
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data.data);
+                            t.setState({absent: data.data});
+                        }
+                        else
+                        {
+                            console.log(data);
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            componentDidMount()
+            {
+                this.getStudent();
+                this.getMark();
+                this.getAbsent();
+            },
+            render(){
+                let listItems1=(this.state.students).map((number) =><option value={number.id} className="list-group-item">
+                    {number.surname} {number.firstname} {number.patronymic}
+                </option>);
+                let listItems2=(this.state.mark).map((number) =><li className="list-group-item"  key={number.id}> {number.student.surname}
+                 {number.student.firstname} {number.student.patronymic} - {number.mark} - {number.date}
+                </li>);
+                let listItems3=(this.state.absent).map((number) =><li className="list-group-item"  key={number.id}> {number.student.surname}
+                 {number.student.firstname} {number.student.patronymic} - {number.absenteeism?"Уважительная":"Неуважительная"} - {number.date}
+                </li>);
+                return(<div>
+                    <div className="form-horizontal">
+                        <div className="form-group">
+                            <div className="col-sm-3">
+                                <label className="control-label">Оценка</label>
+                            </div>
+                            <div className="col-sm-3"><select className="form-control " id="inputStudent1">
+                                                    {listItems1}
+                                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <input type="text" className="form-control" id="inputMark"/>
+                            </div>
+                            <div className="col-sm-3">
+                                    <button className="btn btn-default btn-sm" onClick={this.create}>Создать</button>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <div className="col-sm-3">
+                                     <label className="control-label">Пропуск</label>
+                            </div>
+                            <div className="col-sm-3"><select className="form-control " id="inputStudent2">
+                                                    {listItems1}
+                                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <select className="form-control " id="inputApsent">
+                                        <option value="true" className="list-group-item">Уважительная</option>
+                                        <option value="false" className="list-group-item">Неуважительная</option>
+                                </select>
+                            </div>
+                            <div className="col-sm-3">
+                                    <button className="btn btn-default btn-sm" onClick={this.create1}>Создать</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="col-sm-6">
+                            <ul className="list-group">{listItems2}</ul>
+                            </div>
+                        <div className="col-sm-6">
+                            <ul className="list-group">{listItems3}</ul>
+                            </div>
+                     </div>   
+                    </div>);
+            },
+            create1(){
+                var t=this;
+                var tdate=new Date();
+                $.ajax({
+                    type: "POST",
+                    url: "/api/training/"+t.props.training+"/absent",
+                    dataType: "json",
+                    data:{absenteeism: $('#inputApsent').val(),
+                        student:$('#inputStudent2').val(),
+                        date: tdate.getFullYear()+"."+(tdate.getMonth() + 1)+"."+tdate.getDate()
+                            },
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data.data);
+                            ReactDOM.render(<Success/>, document.getElementById('status'));
+                            t.getAbsent();
+                        }
+                        else
+                        {
+                            console.log(data);
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            },
+            create(){
+                var t=this;
+                var tdate=new Date();
+                $.ajax({
+                    type: "POST",
+                    url: "/api/training/"+t.props.training+"/mark",
+                    dataType: "json",
+                    data:{mark: $('#inputMark').val(),
+                        student:$('#inputStudent1').val(),
+                        date: tdate.getFullYear()+"."+(tdate.getMonth() + 1)+"."+tdate.getDate()
+                            },
+                    success: function (data) {
+                        if(data.success==true)
+                        {
+                            console.log(data.data);
+                            ReactDOM.render(<Success/>, document.getElementById('status'));
+                            t.getMark();
+                        }
+                        else
+                        {
+                            console.log(data);
+                            ReactDOM.render(<Error error={data.message}/>, document.getElementById('status'));
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                })
+            }
+        })
         let Index = React.createClass({
             render() {
                 return (<div><nav className="navbar navbar-inverse ">

@@ -9,7 +9,7 @@
     {"POST":["dean"],
     "GET":["dean","teacher"]},
 
-  "/group:id":
+  "/group/:id":
     {"GET":["dean","teacher"]},
 
   "/student":

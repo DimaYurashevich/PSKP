@@ -20,15 +20,21 @@ module.exports = (trainingService, getId) => {
         .then(data=>res.json(data))
         .catch(err=>res.json(err));
     });
+    router.get("/:id/student",(req, res) =>
+    {
+        trainingService.getStudent(req.params.id, getId(req.cookies["x-access-token"]).user)
+        .then(data=>res.json(data))
+        .catch(err=>res.json(err));
+    });
     router.post('/:id/mark',(req, res) =>
     {
-        trainingService.newMark(req.body,req.params.id,getId(req.cookies["x-access-token"]).faculty)
+        trainingService.newMark(req.body,req.params.id,getId(req.cookies["x-access-token"]).user)
         .then(data=>res.json(data))
         .catch(err=>res.json(err))
     })
     router.post('/:id/absent',(req, res) =>
     {
-        trainingService.newAbsenteeism(req.body,req.params.id,getId(req.cookies["x-access-token"]).faculty)
+        trainingService.newAbsenteeism(req.body,req.params.id,getId(req.cookies["x-access-token"]).user)
         .then(data=>res.json(data))
         .catch(err=>res.json(err))
     })
